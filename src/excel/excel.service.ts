@@ -22,7 +22,7 @@ export class ExcelService {
 
 editCell( sheetName: string, colum: number,attendances: any[]) {
   try{
-    const filePath ="C:\\Users\\Admin\\OneDrive\\Máy tính\\attendances.xlsx";
+    const filePath = "./src/attendances.xlsx";
     const workbook = xlsx.readFile(filePath);
     const sheet = workbook.Sheets[sheetName];
     attendances.forEach((attendance) => {
@@ -35,8 +35,14 @@ editCell( sheetName: string, colum: number,attendances: any[]) {
       }
     });
     const cellStatus = `${this.locationOfRow[colum]}${attendances.length+2}`
+    const cellDateTime = `${this.locationOfRow[colum]}${attendances.length+3}`
+    log('cellStatus', cellStatus)
+    log('cellDateTime', cellDateTime)
     const datetime = this.getCurrentDateTimeInVietnam();
-    sheet[cellStatus] = {v: `Đã điểm danh${datetime}`, t: 's'};
+    sheet[cellStatus] = {v: `Đã điểm danh`, t: 's'};
+    sheet[cellDateTime] = {v: `Vào lúc ${datetime}`, t: 's'};
+    log(sheet[cellStatus])
+    log(sheet[cellDateTime])
     xlsx.writeFile(workbook, filePath);
     console.log('Cell updated successfully!');
     return true
@@ -47,8 +53,10 @@ editCell( sheetName: string, colum: number,attendances: any[]) {
 }
 readCell(sheetName, column, row) {
   try {
-    const filePath = "C:\\Users\\Admin\\OneDrive\\Máy tính\\attendances.xlsx";
+    const filePath = "./src/attendances.xlsx";
     const workbook = xlsx.readFile(filePath);
+    const absoluteFilePath = path.resolve(filePath);
+    log(absoluteFilePath)
     const sheet = workbook.Sheets[sheetName];
     let attendances = [];
     for (let i = 1; i <= column; i++) {
@@ -71,6 +79,11 @@ readCell(sheetName, column, row) {
     console.log('Error reading cell: ', err);
     return [];
   }
+}
+
+getExcelFile(): Buffer {
+  const filePath = path.resolve('./src/attendances.xlsx');
+  return fs.readFileSync(filePath);
 }
 
 }
